@@ -27,10 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $errors[] = "Name must contain letters only.";
     }
 
-    // Email validation
-    if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
-        $errors[] = "Enter a valid email address.";
-    }
+   // Email validation
+$data["email"] = trim($data["email"]);
+
+if ($data["email"] === "") {
+    $errors[] = "Email address is required.";
+} elseif (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
+    $errors[] = "Please enter a valid email address (example: name@gmail.com).";
+}
 
     // Phone validation
     $phoneDigits = preg_replace('/[+\-\s]/', '', $data["phone"]);
@@ -420,18 +424,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     value="<?= h($data["full_name"] ?? "") ?>"
                 >
             </label>
+<label>
+    Email Address <em>*</em>
 
-            <label>
-                Email address <em>*</em>
+    <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="example@gmail.com"
+        maxlength="254"
+        autocomplete="email"
+        required
+        value="<?= h($data["email"] ?? "") ?>"
+    >
 
-                <input
-                    type="email"
-                    name="email"
-                    placeholder="you@example.com"
-                    required
-                    value="<?= h($data["email"] ?? "") ?>"
-                >
-            </label>
+    <small class="hint">
+        Enter a valid email address.
+    </small>
+</label>
 
             <label>
                 Phone number <em>*</em>
