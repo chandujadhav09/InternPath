@@ -19,10 +19,18 @@ $(function () {
     });
 
     $form.on("submit", function (event) {
-        const phone = $('input[name="phone"]').val().replace(/[+\-\s]/g, "");
-        if (!/^[0-9]{10,15}$/.test(phone)) {
+        const fullName = $('input[name="full_name"]').val().trim();
+        if (!/^[\\p{L}]+(?:[ \'-][\\p{L}]+)*$/u.test(fullName)) {
             event.preventDefault();
-            alert("Please enter a valid phone number (10 to 15 digits).");
+            alert("Please enter a name using letters only. Spaces, hyphens and apostrophes are allowed.");
+            $('input[name="full_name"]').focus();
+            return;
+        }
+
+        const phone = $('input[name="phone"]').val().trim();
+        if (!/^[6-9][0-9]{9}$/.test(phone)) {
+            event.preventDefault();
+            alert("Please enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9.");
             $('input[name="phone"]').focus();
             return;
         }
