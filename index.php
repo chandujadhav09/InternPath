@@ -26,14 +26,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif (!preg_match("/^[a-zA-Z\s.'-]+$/", $data["full_name"])) {
         $errors[] = "Name must contain letters only.";
     }
-
-   // Email validation
-$data["email"] = trim($data["email"]);
+// Email validation
+$data["email"] = strtolower(trim($data["email"]));
 
 if ($data["email"] === "") {
     $errors[] = "Email address is required.";
-} elseif (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) {
-    $errors[] = "Please enter a valid email address (example: name@gmail.com).";
+} elseif (!preg_match('/^[a-zA-Z0-9._%+-]+@gmail\.com$/', $data["email"])) {
+    $errors[] = "Please enter a valid Gmail address ending with @gmail.com.";
 }
 
     // Phone validation
