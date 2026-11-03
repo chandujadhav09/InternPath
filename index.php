@@ -8,10 +8,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $fields = ["full_name", "email", "phone", "college", "degree", "graduation_year", "domain", "duration", "skills"];
     foreach ($fields as $field) $data[$field] = trim($_POST[$field] ?? "");
 
-    if ($data["full_name"] === "") $errors[] = "Full name is required.";
+    if ($data["full_name"] === "") {
+        $errors[] = "Full name is required.";
+    } elseif (!preg_match("/^[\\p{L}]+(?:[ \'-][\\p{L}]+)*$/u", $data["full_name"])) {
+        $errors[] = "Full name must contain letters only (spaces, hyphens and apostrophes are allowed).";
+    }
     if (!filter_var($data["email"], FILTER_VALIDATE_EMAIL)) $errors[] = "Enter a valid email address.";
-    $phoneDigits = preg_replace('/[+\-\s]/', '', $data["phone"]);
-    if (!preg_match('/^[0-9]{10,15}$/', $phoneDigits)) $errors[] = "Enter a valid phone number containing 10 to 15 digits.";
+    $phoneDigits = preg_replace('/\s+/', '', $data["phone"]);
+    if (!preg_match('/^[6-9][0-9]{9}$/', $phoneDigits)) $errors[] = "Enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9.";
     foreach (["college","degree","graduation_year","domain","duration","skills"] as $field) {
         if ($data[$field] === "") $errors[] = ucfirst(str_replace("_", " ", $field)) . " is required.";
     }
@@ -108,9 +112,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <form id="applicationForm" method="POST" enctype="multipart/form-data">
     <h3>Personal information</h3>
     <div class="grid">
-      <label>Full name <em>*</em><input name="full_name" placeholder="e.g. Chandrika Jadhav" required value="<?=h($data["full_name"]??"")?>"></label>
+      <label>Full name <em>*</em><input name="full_name" placeholder="e.g. Chandrika Jadhav" pattern="[A-Za-zÀ-ÿ]+([ '-][A-Za-zÀ-ÿ]+)*" title="Use letters only; spaces, hyphens and apostrophes are allowed." required value="<?=h($data["full_name"]??"")?>"></label>
       <label>Email address <em>*</em><input type="email" name="email" placeholder="you@example.com" required value="<?=h($data["email"]??"")?>"></label>
-      <label>Phone number <em>*</em><input type="tel" name="phone" placeholder="Enter mobile number" required value="<?=h($data["phone"]??"")?>"></label>
+      <label>Phone number <em>*</em><input type="tel" name="phone" placeholder="Enter 10-digit mobile number" inputmode="numeric" pattern="[6-9][0-9]{9}" maxlength="10" minlength="10" title="Enter exactly 10 digits, starting with 6, 7, 8 or 9." required value="<?=h($data["phone"]??"")?>"></label>
       <label>College / University <em>*</em><input name="college" placeholder="Your institution name" required value="<?=h($data["college"]??"")?>"></label>
     </div>
     <h3 class="section-gap">Academic details</h3>
